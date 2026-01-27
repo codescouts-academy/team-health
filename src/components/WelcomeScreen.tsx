@@ -2,9 +2,10 @@ import { useState } from "react";
 
 interface WelcomeScreenProps {
   onStart: (teamName: string) => void;
+  onMultiplayer: () => void;
 }
 
-export const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
+export const WelcomeScreen = ({ onStart, onMultiplayer }: WelcomeScreenProps) => {
   const [teamName, setTeamName] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -46,8 +47,8 @@ export const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit}>
-            <div className="mb-6">
+          <form onSubmit={handleSubmit} className="mb-4">
+            <div className="mb-4">
               <label
                 htmlFor="teamName"
                 className="block text-left font-semibold mb-2"
@@ -74,9 +75,20 @@ export const WelcomeScreen = ({ onStart }: WelcomeScreenProps) => {
                        hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-[0.98]
                        disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              🚀 Comenzar Evaluación
+              🚀 Modo Individual
             </button>
           </form>
+
+          {/* Multiplayer Button */}
+          <button
+            type="button"
+            onClick={onMultiplayer}
+            className="w-full py-4 bg-secondary text-secondary-foreground font-bold text-lg rounded-xl
+                     hover:bg-secondary/80 transition-all hover:scale-[1.02] active:scale-[0.98]
+                     flex items-center justify-center gap-2"
+          >
+            <span>👥</span> Modo Multijugador (SSE)
+          </button>
 
           {/* Footer */}
           <p className="mt-6 text-xs text-muted-foreground">
