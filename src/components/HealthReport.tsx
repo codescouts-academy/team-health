@@ -13,6 +13,7 @@ interface HealthReportProps {
   votes: TeamVote[];
   teamName: string;
   onReset: () => void;
+  participantCount?: number;
 }
 
 const voteToScore = (vote: VoteValue): number => {
@@ -35,7 +36,7 @@ const getScoreEmoji = (vote: VoteValue): string => {
   return "⚪";
 };
 
-export const HealthReport = ({ votes, teamName, onReset }: HealthReportProps) => {
+export const HealthReport = ({ votes, teamName, onReset, participantCount }: HealthReportProps) => {
   const chartData = healthCategories.map((category) => {
     const vote = votes.find((v) => v.categoryId === category.id);
     return {
@@ -76,9 +77,18 @@ export const HealthReport = ({ votes, teamName, onReset }: HealthReportProps) =>
             📊 Reporte de Salud del Equipo
           </h1>
           <p className="text-muted-foreground">Squad Health Check - Metodología Ágil</p>
-          <div className="mt-4 inline-block bg-primary/10 px-4 py-2 rounded-full">
-            <span className="font-bold text-primary">{teamName}</span>
-            <span className="text-muted-foreground ml-2">• {currentDate}</span>
+          <div className="mt-4 inline-flex flex-wrap justify-center gap-2">
+            <span className="bg-primary/10 px-4 py-2 rounded-full">
+              <span className="font-bold text-primary">{teamName}</span>
+            </span>
+            {participantCount && (
+              <span className="bg-secondary/50 px-4 py-2 rounded-full">
+                <span className="text-muted-foreground">👥 {participantCount} participantes</span>
+              </span>
+            )}
+            <span className="bg-muted px-4 py-2 rounded-full">
+              <span className="text-muted-foreground">{currentDate}</span>
+            </span>
           </div>
         </div>
 
