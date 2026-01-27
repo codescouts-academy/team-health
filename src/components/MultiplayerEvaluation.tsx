@@ -26,8 +26,12 @@ export const MultiplayerEvaluation = ({
   const currentCategory = healthCategories[currentIndex];
 
   // Get current participant's votes
-  const myVotes = room.votes.filter((v) => v.odataidPtant === currentParticipant.id);
-  const myCurrentVote = myVotes.find((v) => v.categoryId === currentCategory.id);
+  const myVotes = room.votes.filter(
+    (v) => v.odataidPtant === currentParticipant.id,
+  );
+  const myCurrentVote = myVotes.find(
+    (v) => v.categoryId === currentCategory.id,
+  );
   const allMyVotesComplete = myVotes.length === healthCategories.length;
 
   // Get vote counts per category for live feedback
@@ -64,6 +68,7 @@ export const MultiplayerEvaluation = ({
   });
 
   useEffect(() => {
+    // Solo ejecutar si todos completaron Y el status aún no es "completed"
     if (allParticipantsComplete && room.status !== "completed") {
       onComplete();
     }
@@ -87,10 +92,17 @@ export const MultiplayerEvaluation = ({
             <div
               className={cn(
                 "px-3 py-1 rounded-full text-xs font-medium flex items-center gap-2",
-                isConnected ? "bg-success/20 text-success" : "bg-warning/20 text-warning"
+                isConnected
+                  ? "bg-success/20 text-success"
+                  : "bg-warning/20 text-warning",
               )}
             >
-              <span className={cn("w-2 h-2 rounded-full", isConnected ? "bg-success" : "bg-warning")} />
+              <span
+                className={cn(
+                  "w-2 h-2 rounded-full",
+                  isConnected ? "bg-success" : "bg-warning",
+                )}
+              />
               {room.participants.length} en línea
             </div>
           </div>
@@ -117,14 +129,20 @@ export const MultiplayerEvaluation = ({
                 className={cn(
                   "px-3 py-2 rounded-full text-sm font-semibold transition-all relative",
                   isCurrent && "bg-primary text-primary-foreground scale-110",
-                  !isCurrent && myVote && "bg-success/20 text-success border border-success/30",
-                  !isCurrent && !myVote && "bg-muted text-muted-foreground hover:bg-muted/80"
+                  !isCurrent &&
+                    myVote &&
+                    "bg-success/20 text-success border border-success/30",
+                  !isCurrent &&
+                    !myVote &&
+                    "bg-muted text-muted-foreground hover:bg-muted/80",
                 )}
               >
                 <span className="mr-1">{category.icon}</span>
                 {stats.total > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground 
-                                 rounded-full text-xs flex items-center justify-center">
+                  <span
+                    className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground 
+                                 rounded-full text-xs flex items-center justify-center"
+                  >
                     {stats.total}
                   </span>
                 )}
@@ -206,7 +224,7 @@ export const MultiplayerEvaluation = ({
             {room.participants.map((p) => {
               const pVotes = room.votes.filter((v) => v.odataidPtant === p.id);
               const progress = (pVotes.length / healthCategories.length) * 100;
-              
+
               return (
                 <div key={p.id} className="flex items-center gap-3">
                   <span className="text-sm w-20 truncate text-muted-foreground">
@@ -216,7 +234,7 @@ export const MultiplayerEvaluation = ({
                     <div
                       className={cn(
                         "h-full transition-all duration-500",
-                        progress === 100 ? "bg-success" : "bg-primary"
+                        progress === 100 ? "bg-success" : "bg-primary",
                       )}
                       style={{ width: `${progress}%` }}
                     />

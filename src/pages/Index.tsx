@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { HealthEvaluation } from "@/components/HealthEvaluation";
 import { HealthReport } from "@/components/HealthReport";
@@ -9,7 +11,14 @@ import { useRoom } from "@/hooks/useRoom";
 import { TeamVote, healthCategories } from "@/data/healthCategories";
 import { endpoints } from "@/config/api";
 
-type AppState = "welcome" | "evaluation" | "report" | "multiplayer-lobby" | "multiplayer-waiting" | "multiplayer-voting" | "multiplayer-report";
+type AppState =
+  | "welcome"
+  | "evaluation"
+  | "report"
+  | "multiplayer-lobby"
+  | "multiplayer-waiting"
+  | "multiplayer-voting"
+  | "multiplayer-report";
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>("welcome");
@@ -93,13 +102,17 @@ const Index = () => {
   // Convert room votes to TeamVote format for report
   const getAggregatedVotes = (): TeamVote[] => {
     if (!room) return [];
-    
+
     return healthCategories.map((category) => {
-      const categoryVotes = room.votes.filter((v) => v.categoryId === category.id);
+      const categoryVotes = room.votes.filter(
+        (v) => v.categoryId === category.id,
+      );
       const greenCount = categoryVotes.filter((v) => v.vote === "green").length;
-      const yellowCount = categoryVotes.filter((v) => v.vote === "yellow").length;
+      const yellowCount = categoryVotes.filter(
+        (v) => v.vote === "yellow",
+      ).length;
       const redCount = categoryVotes.filter((v) => v.vote === "red").length;
-      
+
       // Determine majority vote
       let vote: "green" | "yellow" | "red" | null = null;
       const maxCount = Math.max(greenCount, yellowCount, redCount);
@@ -108,15 +121,24 @@ const Index = () => {
         else if (yellowCount === maxCount) vote = "yellow";
         else vote = "red";
       }
-      
+
       return { categoryId: category.id, vote };
     });
   };
 
+  useEffect(() => {
+    if (room?.status === "voting") {
+      setAppState("multiplayer-voting");
+    }
+  }, [room?.status]);
+
   return (
     <>
       {appState === "welcome" && (
-        <WelcomeScreen onStart={handleStart} onMultiplayer={handleMultiplayer} />
+        <WelcomeScreen
+          onStart={handleStart}
+          onMultiplayer={handleMultiplayer}
+        />
       )}
       {appState === "evaluation" && (
         <HealthEvaluation

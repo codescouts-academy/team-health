@@ -20,7 +20,7 @@ export const useRoom = (options: UseRoomOptions = {}) => {
       case "connected":
         console.log("Connected to room SSE");
         break;
-        
+
       case "participant_joined": {
         const data = event.data as ParticipantJoinedData;
         setRoom(prev => prev ? {
@@ -30,7 +30,7 @@ export const useRoom = (options: UseRoomOptions = {}) => {
         toast.success(`${data.participant.name} se unió a la sala`);
         break;
       }
-      
+
       case "participant_left": {
         const data = event.data as { odataidPtant: string; participantName: string };
         setRoom(prev => prev ? {
@@ -40,7 +40,7 @@ export const useRoom = (options: UseRoomOptions = {}) => {
         toast.info(`${data.participantName} salió de la sala`);
         break;
       }
-      
+
       case "vote_cast": {
         const data = event.data as VoteCastData;
         setRoom(prev => {
@@ -52,7 +52,7 @@ export const useRoom = (options: UseRoomOptions = {}) => {
             ...data,
             timestamp: event.timestamp
           };
-          
+
           if (existingVoteIndex >= 0) {
             const newVotes = [...prev.votes];
             newVotes[existingVoteIndex] = newVote;
@@ -62,17 +62,18 @@ export const useRoom = (options: UseRoomOptions = {}) => {
         });
         break;
       }
-      
+
       case "voting_started":
+        console.log("Voting started");
         setRoom(prev => prev ? { ...prev, status: "voting" } : null);
         toast.success("¡La votación ha comenzado!");
         break;
-        
+
       case "voting_completed":
         setRoom(prev => prev ? { ...prev, status: "completed" } : null);
         options.onVotingCompleted?.();
         break;
-        
+
       case "room_closed":
         toast.error("La sala ha sido cerrada");
         setRoom(null);
@@ -89,16 +90,16 @@ export const useRoom = (options: UseRoomOptions = {}) => {
   const createRoom = useCallback(async (teamName: string, hostName: string) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(endpoints.createRoom, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ teamName, hostName }),
       });
-      
+
       if (!response.ok) throw new Error("Failed to create room");
-      
+
       const data = await response.json();
       setRoom(data.room);
       setCurrentParticipant(data.participant);
@@ -116,19 +117,19 @@ export const useRoom = (options: UseRoomOptions = {}) => {
   const joinRoom = useCallback(async (code: string, participantName: string) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(endpoints.joinRoom(code), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ participantName }),
       });
-      
+
       if (!response.ok) {
         if (response.status === 404) throw new Error("Sala no encontrada");
         throw new Error("Error al unirse a la sala");
       }
-      
+
       const data = await response.json();
       setRoom(data.room);
       setCurrentParticipant(data.participant);
@@ -145,7 +146,7 @@ export const useRoom = (options: UseRoomOptions = {}) => {
 
   const leaveRoom = useCallback(async () => {
     if (!room || !currentParticipant) return;
-    
+
     try {
       await fetch(endpoints.leaveRoom(room.code), {
         method: "POST",
@@ -162,7 +163,7 @@ export const useRoom = (options: UseRoomOptions = {}) => {
 
   const submitVote = useCallback(async (categoryId: string, vote: VoteValue) => {
     if (!room || !currentParticipant) return false;
-    
+
     try {
       const response = await fetch(endpoints.submitVote(room.code), {
         method: "POST",
@@ -173,7 +174,7 @@ export const useRoom = (options: UseRoomOptions = {}) => {
           vote,
         }),
       });
-      
+
       if (!response.ok) throw new Error("Failed to submit vote");
       return true;
     } catch (err) {
