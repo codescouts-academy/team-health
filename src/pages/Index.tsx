@@ -38,11 +38,6 @@ const Index = () => {
     onVotingCompleted: () => setAppState("multiplayer-report"),
   });
 
-  const handleStart = (name: string) => {
-    setTeamName(name);
-    setAppState("evaluation");
-  };
-
   const handleComplete = (completedVotes: TeamVote[]) => {
     setVotes(completedVotes);
     setAppState("report");
@@ -135,10 +130,7 @@ const Index = () => {
   return (
     <>
       {appState === "welcome" && (
-        <WelcomeScreen
-          onStart={handleStart}
-          onMultiplayer={handleMultiplayer}
-        />
+        <WelcomeScreen onMultiplayer={handleMultiplayer} />
       )}
       {appState === "evaluation" && (
         <HealthEvaluation

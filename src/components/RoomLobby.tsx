@@ -8,7 +8,12 @@ interface RoomLobbyProps {
   isLoading: boolean;
 }
 
-export const RoomLobby = ({ onCreateRoom, onJoinRoom, onBack, isLoading }: RoomLobbyProps) => {
+export const RoomLobby = ({
+  onCreateRoom,
+  onJoinRoom,
+  onBack,
+  isLoading,
+}: RoomLobbyProps) => {
   const [mode, setMode] = useState<"select" | "create" | "join">("select");
   const [teamName, setTeamName] = useState("");
   const [userName, setUserName] = useState("");
@@ -64,7 +69,7 @@ export const RoomLobby = ({ onCreateRoom, onJoinRoom, onBack, isLoading }: RoomL
               className="w-full p-4 text-muted-foreground hover:text-foreground
                        transition-colors font-medium"
             >
-              ← Volver al modo individual
+              ← Volver
             </button>
           </div>
         </div>
@@ -145,19 +150,25 @@ export const RoomLobby = ({ onCreateRoom, onJoinRoom, onBack, isLoading }: RoomL
 
           <button
             onClick={mode === "create" ? handleCreate : handleJoin}
-            disabled={isLoading || !userName.trim() || (mode === "create" ? !teamName.trim() : !roomCode.trim())}
+            disabled={
+              isLoading ||
+              !userName.trim() ||
+              (mode === "create" ? !teamName.trim() : !roomCode.trim())
+            }
             className={cn(
               "w-full py-4 rounded-xl font-bold text-lg transition-all",
               "bg-primary text-primary-foreground hover:bg-primary/90",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
+              "disabled:opacity-50 disabled:cursor-not-allowed",
             )}
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="animate-spin">⏳</span> Conectando...
               </span>
+            ) : mode === "create" ? (
+              "Crear Sala"
             ) : (
-              mode === "create" ? "Crear Sala" : "Unirse"
+              "Unirse"
             )}
           </button>
         </div>
