@@ -123,6 +123,16 @@ const Index = () => {
     });
   };
 
+  const handleBeforeUnload = (e: any) => {
+    localStorage.setItem("room", JSON.stringify(room));
+    localStorage.setItem("name", currentParticipant?.name || "");
+    leaveRoom();
+
+    e.preventDefault();
+    e.returnValue = "";
+    return "";
+  };
+
   useEffect(() => {
     if (room?.status === "voting") {
       setAppState("multiplayer-voting");
@@ -130,17 +140,15 @@ const Index = () => {
   }, [room?.status]);
 
   useEffect(() => {
-    if (appState === "multiplayer-waiting") {
-      window.addEventListener("beforeunload", function (e) {
-        localStorage.setItem("room", JSON.stringify(room));
-        localStorage.setItem("name", currentParticipant?.name || "");
+    if (
+      appState === "multiplayer-waiting" ||
+      appState === "multiplayer-voting"
+    ) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
 
-        leaveRoom();
-
-        var confirmationMessage = "Are you sure you want to leave?";
-        e.returnValue = confirmationMessage;
-        return confirmationMessage;
-      });
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+      };
     }
   }, [appState]);
 
@@ -149,13 +157,24 @@ const Index = () => {
     const name = localStorage.getItem("name") || "";
     if (savedRoom) {
       const parsedRoom = JSON.parse(savedRoom) as Room;
+      debugger;
       if (parsedRoom) {
-        joinRoom(parsedRoom.code, name).then((room) => {
-          setAppState("multiplayer-waiting");
+        joinRoom(parsedRoom.code, name)
+          .then((room) => {
+            if (!room) {
+              setAppState("welcome");
+              return;
+            }
 
-          localStorage.removeItem("room");
-          localStorage.removeItem("name");
-        });
+            setAppState("multiplayer-waiting");
+          })
+          .catch(() => {
+            setAppState("welcome");
+          })
+          .finally(() => {
+            localStorage.removeItem("room");
+            localStorage.removeItem("name");
+          });
       }
     }
   }, []);
