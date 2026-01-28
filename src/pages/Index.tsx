@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
-import { HealthEvaluation } from "@/components/HealthEvaluation";
 import { HealthReport } from "@/components/HealthReport";
 import { RoomLobby } from "@/components/RoomLobby";
 import { RoomWaiting } from "@/components/RoomWaiting";
@@ -39,11 +38,6 @@ const Index = () => {
   } = useRoom({
     onVotingCompleted: () => setAppState("multiplayer-report"),
   });
-
-  const handleComplete = (completedVotes: TeamVote[]) => {
-    setVotes(completedVotes);
-    setAppState("report");
-  };
 
   const handleReset = () => {
     setTeamName("");
@@ -190,13 +184,6 @@ const Index = () => {
 
       {appState === "welcome" && (
         <WelcomeScreen onMultiplayer={handleMultiplayer} />
-      )}
-      {appState === "evaluation" && (
-        <HealthEvaluation
-          teamName={teamName}
-          onComplete={handleComplete}
-          onBack={handleBack}
-        />
       )}
       {appState === "report" && (
         <HealthReport votes={votes} teamName={teamName} onReset={handleReset} />
