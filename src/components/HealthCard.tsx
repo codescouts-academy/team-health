@@ -5,17 +5,11 @@ interface HealthCardProps {
   category: HealthCategory;
   vote: VoteValue;
   onVote: (vote: VoteValue) => void;
-  isActive: boolean;
 }
 
-export const HealthCard = ({ category, vote, onVote, isActive }: HealthCardProps) => {
+export const HealthCard = ({ category, vote, onVote }: HealthCardProps) => {
   return (
-    <div
-      className={cn(
-        "health-card p-6 flex flex-col",
-        isActive && "animate-bounce-in"
-      )}
-    >
+    <div className={cn("health-card p-6 flex flex-col")}>
       {/* Header */}
       <div className="text-center mb-4">
         <span className="text-5xl mb-3 block">{category.icon}</span>
@@ -26,11 +20,15 @@ export const HealthCard = ({ category, vote, onVote, isActive }: HealthCardProps
       <div className="flex-1 space-y-4 mb-6">
         <div className="flex items-start gap-3 p-3 rounded-lg bg-success/10 border border-success/20">
           <span className="text-xl">🟢</span>
-          <p className="text-sm text-foreground/80">{category.positiveDescription}</p>
+          <p className="text-sm text-foreground/80">
+            {category.positiveDescription}
+          </p>
         </div>
         <div className="flex items-start gap-3 p-3 rounded-lg bg-danger/10 border border-danger/20">
           <span className="text-xl">🔴</span>
-          <p className="text-sm text-foreground/80">{category.negativeDescription}</p>
+          <p className="text-sm text-foreground/80">
+            {category.negativeDescription}
+          </p>
         </div>
       </div>
 
@@ -40,7 +38,7 @@ export const HealthCard = ({ category, vote, onVote, isActive }: HealthCardProps
           onClick={() => onVote("green")}
           className={cn(
             "traffic-light-btn traffic-green",
-            vote === "green" && "selected-ring"
+            vote === "green" && "selected-ring",
           )}
           aria-label="Excelente"
         >
@@ -50,7 +48,7 @@ export const HealthCard = ({ category, vote, onVote, isActive }: HealthCardProps
           onClick={() => onVote("yellow")}
           className={cn(
             "traffic-light-btn traffic-yellow",
-            vote === "yellow" && "selected-ring"
+            vote === "yellow" && "selected-ring",
           )}
           aria-label="Regular"
         >
@@ -60,7 +58,7 @@ export const HealthCard = ({ category, vote, onVote, isActive }: HealthCardProps
           onClick={() => onVote("red")}
           className={cn(
             "traffic-light-btn traffic-red",
-            vote === "red" && "selected-ring"
+            vote === "red" && "selected-ring",
           )}
           aria-label="Necesita mejorar"
         >
@@ -71,7 +69,12 @@ export const HealthCard = ({ category, vote, onVote, isActive }: HealthCardProps
       {/* Vote status */}
       {vote && (
         <p className="text-center mt-4 text-sm text-muted-foreground animate-slide-up">
-          ✓ Votado: {vote === "green" ? "Excelente" : vote === "yellow" ? "Regular" : "Necesita mejorar"}
+          ✓ Votado:{" "}
+          {vote === "green"
+            ? "Excelente"
+            : vote === "yellow"
+              ? "Regular"
+              : "Necesita mejorar"}
         </p>
       )}
     </div>

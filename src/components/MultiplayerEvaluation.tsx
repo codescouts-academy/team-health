@@ -47,6 +47,7 @@ export const MultiplayerEvaluation = ({
 
   const handleVote = async (vote: VoteValue) => {
     await onVote(currentCategory.id, vote);
+    handleNext();
   };
 
   const handleNext = () => {
@@ -176,7 +177,6 @@ export const MultiplayerEvaluation = ({
             category={currentCategory}
             vote={myCurrentVote?.vote || null}
             onVote={handleVote}
-            isActive={true}
           />
         </div>
 
@@ -192,14 +192,7 @@ export const MultiplayerEvaluation = ({
           </button>
 
           {!isLastCategory ? (
-            <button
-              onClick={handleNext}
-              disabled={!myCurrentVote}
-              className="px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-xl
-                       hover:bg-primary/90 transition-all disabled:opacity-40"
-            >
-              Siguiente →
-            </button>
+            <></>
           ) : (
             <div className="px-6 py-3 text-center">
               {allMyVotesComplete ? (

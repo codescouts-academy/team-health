@@ -36,7 +36,12 @@ const getScoreEmoji = (vote: VoteValue): string => {
   return "⚪";
 };
 
-export const HealthReport = ({ votes, teamName, onReset, participantCount }: HealthReportProps) => {
+export const HealthReport = ({
+  votes,
+  teamName,
+  onReset,
+  participantCount,
+}: HealthReportProps) => {
   const chartData = healthCategories.map((category) => {
     const vote = votes.find((v) => v.categoryId === category.id);
     return {
@@ -54,9 +59,12 @@ export const HealthReport = ({ votes, teamName, onReset, participantCount }: Hea
   const redCount = votes.filter((v) => v.vote === "red").length;
 
   const getOverallHealth = () => {
-    if (averageScore >= 2.5) return { label: "Excelente", emoji: "🌟", color: "text-success" };
-    if (averageScore >= 2) return { label: "Buena", emoji: "👍", color: "text-success" };
-    if (averageScore >= 1.5) return { label: "Regular", emoji: "⚠️", color: "text-warning" };
+    if (averageScore >= 2.5)
+      return { label: "Excelente", emoji: "🌟", color: "text-success" };
+    if (averageScore >= 2)
+      return { label: "Buena", emoji: "👍", color: "text-success" };
+    if (averageScore >= 1.5)
+      return { label: "Regular", emoji: "⚠️", color: "text-warning" };
     return { label: "Necesita Atención", emoji: "🚨", color: "text-danger" };
   };
 
@@ -76,14 +84,18 @@ export const HealthReport = ({ votes, teamName, onReset, participantCount }: Hea
           <h1 className="text-3xl md:text-4xl font-extrabold text-foreground mb-2">
             📊 Reporte de Salud del Equipo
           </h1>
-          <p className="text-muted-foreground">Squad Health Check - Metodología Ágil</p>
+          <p className="text-muted-foreground">
+            Squad Health Check - Metodología Ágil
+          </p>
           <div className="mt-4 inline-flex flex-wrap justify-center gap-2">
             <span className="bg-primary/10 px-4 py-2 rounded-full">
               <span className="font-bold text-primary">{teamName}</span>
             </span>
             {participantCount && (
               <span className="bg-secondary/50 px-4 py-2 rounded-full">
-                <span className="text-muted-foreground">👥 {participantCount} participantes</span>
+                <span className="text-muted-foreground">
+                  👥 {participantCount} participantes
+                </span>
               </span>
             )}
             <span className="bg-muted px-4 py-2 rounded-full">
@@ -110,11 +122,15 @@ export const HealthReport = ({ votes, teamName, onReset, participantCount }: Hea
           {/* Summary stats */}
           <div className="flex justify-center gap-8 mt-6">
             <div className="text-center">
-              <div className="text-3xl font-bold text-success">{greenCount}</div>
+              <div className="text-3xl font-bold text-success">
+                {greenCount}
+              </div>
               <div className="text-sm text-muted-foreground">🟢 Excelente</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-warning">{yellowCount}</div>
+              <div className="text-3xl font-bold text-warning">
+                {yellowCount}
+              </div>
               <div className="text-sm text-muted-foreground">🟡 Regular</div>
             </div>
             <div className="text-center">
@@ -174,13 +190,15 @@ export const HealthReport = ({ votes, teamName, onReset, participantCount }: Hea
                     <span className="font-semibold">{category.title}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xl">{getScoreEmoji(vote?.vote || null)}</span>
+                    <span className="text-xl">
+                      {getScoreEmoji(vote?.vote || null)}
+                    </span>
                     <span className={cn("font-bold", getScoreColor(score))}>
                       {vote?.vote === "green"
                         ? "Excelente"
                         : vote?.vote === "yellow"
-                        ? "Regular"
-                        : "Mejorar"}
+                          ? "Regular"
+                          : "Mejorar"}
                     </span>
                   </div>
                 </div>
@@ -200,7 +218,7 @@ export const HealthReport = ({ votes, teamName, onReset, participantCount }: Hea
                 .filter((v) => v.vote === "red")
                 .map((vote) => {
                   const category = healthCategories.find(
-                    (c) => c.id === vote.categoryId
+                    (c) => c.id === vote.categoryId,
                   );
                   return (
                     <div
@@ -214,8 +232,13 @@ export const HealthReport = ({ votes, teamName, onReset, participantCount }: Hea
                         </span>
                       </div>
                       <p className="text-sm text-foreground/70">
-                        💡 Sugerencia: Programar una retrospectiva específica para
-                        abordar este tema con el equipo.
+                        {category?.tips && category.tips.length > 0
+                          ? category.tips.map((tip) => (
+                              <span key={tip} className="block">
+                                • {tip}
+                              </span>
+                            ))
+                          : "No se proporcionaron sugerencias específicas para esta categoría."}
                       </p>
                     </div>
                   );
@@ -225,7 +248,8 @@ export const HealthReport = ({ votes, teamName, onReset, participantCount }: Hea
             <div className="text-center py-8">
               <span className="text-5xl">🎉</span>
               <p className="mt-4 text-lg font-semibold text-success">
-                ¡Excelente! No hay áreas críticas que requieran atención inmediata.
+                ¡Excelente! No hay áreas críticas que requieran atención
+                inmediata.
               </p>
             </div>
           )}
