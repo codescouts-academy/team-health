@@ -104,20 +104,24 @@ const Index = () => {
       const categoryVotes = room.votes.filter(
         (v) => v.categoryId === category.id,
       );
+
+      if (categoryVotes.length === 0) {
+        return { categoryId: category.id, vote: null };
+      }
+
       const greenCount = categoryVotes.filter((v) => v.vote === "green").length;
       const yellowCount = categoryVotes.filter(
         (v) => v.vote === "yellow",
       ).length;
       const redCount = categoryVotes.filter((v) => v.vote === "red").length;
 
-      // Determine majority vote
+      const totalScore = greenCount * 3 + yellowCount * 2 + redCount * 1;
+      const averageScore = totalScore / categoryVotes.length;
+
       let vote: "green" | "yellow" | "red" | null = null;
-      const maxCount = Math.max(greenCount, yellowCount, redCount);
-      if (maxCount > 0) {
-        if (greenCount === maxCount) vote = "green";
-        else if (yellowCount === maxCount) vote = "yellow";
-        else vote = "red";
-      }
+      if (averageScore >= 2.5) vote = "green";
+      else if (averageScore >= 1.5) vote = "yellow";
+      else vote = "red";
 
       return { categoryId: category.id, vote };
     });
