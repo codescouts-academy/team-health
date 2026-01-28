@@ -1,38 +1,32 @@
 import { HealthCategory, VoteValue } from "@/data/healthCategories";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 interface HealthCardProps {
   category: HealthCategory;
   vote: VoteValue;
-  onVote: (vote: VoteValue) => void;
+  onVote: (vote: VoteValue) => Promise<boolean>;
 }
 
 export const HealthCard = ({ category, vote, onVote }: HealthCardProps) => {
-  const timeout = useRef<NodeJS.Timeout | null>(null);
-  const [canVote, setCanVote] = useState(false);
-  useEffect(() => {
-    timeout.current = setTimeout(() => {
-      setCanVote(true);
-    }, 1000);
-
-    return () => {
-      if (timeout.current) {
-        clearTimeout(timeout.current);
-      }
-    };
-  }, [category]);
+  const [canVote, setCanVote] = useState(true);
 
   const handleVote = async (voteValue: VoteValue) => {
     if (!canVote) return;
 
     setCanVote(false);
 
-    await onVote(voteValue);
+    try {
+      const result = await onVote(voteValue);
+
+      setCanVote(result);
+    } catch {
+      setCanVote(true);
+    }
   };
 
   return (
-    <div className="health-card p-6 flex flex-col h-[26rem] w-full">
+    <div className="health-card p-6 flex flex-col h-[26rem] w-full select-none">
       {/* Header */}
       <div className="text-center mb-4">
         <span className="text-5xl mb-3 block">{category.icon}</span>
@@ -58,7 +52,7 @@ export const HealthCard = ({ category, vote, onVote }: HealthCardProps) => {
       {/* Traffic Light Voting */}
       <div
         className={cn("flex justify-center gap-4", {
-          "opacity-50 pointer-events-none animate-pulse": !canVote,
+          "opacity-50 pointer-events-none": !canVote,
         })}
       >
         <button

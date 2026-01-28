@@ -173,7 +173,6 @@ export const MultiplayerEvaluation = ({
         {/* Current Card */}
         <div className="max-w-md mx-auto mb-8">
           <HealthCard
-            key={currentCategory.id}
             category={currentCategory}
             vote={myCurrentVote?.vote || null}
             onVote={handleVote}
