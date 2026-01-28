@@ -121,8 +121,12 @@ export const HealthEvaluation = ({
           <button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            className="px-6 py-3 bg-muted text-foreground font-semibold rounded-xl
-                     hover:bg-muted/80 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+            className={cn(
+              "px-6 py-3 bg-muted text-foreground font-semibold rounded-xl hover:bg-muted/80 transition-all disabled:opacity-40 disabled:cursor-not-allowed",
+              {
+                hidden: currentIndex === 0,
+              },
+            )}
           >
             ← Anterior
           </button>

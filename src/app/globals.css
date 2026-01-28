@@ -98,7 +98,7 @@
 @layer components {
   .health-card {
     @apply bg-card rounded-2xl border-4 border-primary/30 shadow-lg 
-           transition-all duration-300 hover:shadow-xl hover:scale-[1.02]
+           transition-all duration-300 hover:shadow-xl
            hover:border-primary/60;
   }
 

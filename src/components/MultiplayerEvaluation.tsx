@@ -153,22 +153,20 @@ export const MultiplayerEvaluation = ({
         </div>
 
         {/* Live Vote Stats */}
-        {currentStats.total > 0 && (
-          <div className="flex justify-center gap-4 mb-4 animate-slide-up">
-            <div className="bg-muted/50 px-4 py-2 rounded-full flex items-center gap-3 text-sm">
-              <span className="text-muted-foreground">Votos:</span>
-              <span className="flex items-center gap-1">
-                <span className="text-success">●</span> {currentStats.green}
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="text-warning">●</span> {currentStats.yellow}
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="text-danger">●</span> {currentStats.red}
-              </span>
-            </div>
+        <div className="flex justify-center gap-4 mb-4 animate-slide-up">
+          <div className="bg-muted/50 px-4 py-2 rounded-full flex items-center gap-3 text-sm">
+            <span className="text-muted-foreground">Votos:</span>
+            <span className="flex items-center gap-1">
+              <span className="text-success">●</span> {currentStats?.green}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="text-warning">●</span> {currentStats?.yellow}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="text-danger">●</span> {currentStats?.red}
+            </span>
           </div>
-        )}
+        </div>
 
         {/* Current Card */}
         <div className="max-w-md mx-auto mb-8">
@@ -185,8 +183,12 @@ export const MultiplayerEvaluation = ({
           <button
             onClick={handlePrev}
             disabled={currentIndex === 0}
-            className="px-6 py-3 bg-muted text-foreground font-semibold rounded-xl
-                     hover:bg-muted/80 transition-all disabled:opacity-40"
+            className={cn(
+              "px-6 py-3 bg-muted text-foreground font-semibold rounded-xl hover:bg-muted/80 transition-all disabled:opacity-40",
+              {
+                hidden: currentIndex === 0,
+              },
+            )}
           >
             ← Anterior
           </button>
