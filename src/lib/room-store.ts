@@ -55,7 +55,7 @@ class RoomStore {
   // Unirse a una sala
   joinRoom(code: string, participantName: string): { room: Room; participant: Participant } | null {
     const room = this.rooms.get(code);
-    if (!room || room.status !== "waiting") return null;
+    if (!room) return null;
 
     const participant: Participant = {
       id: this.generateId(),

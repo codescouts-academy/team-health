@@ -114,7 +114,7 @@ export const useRoom = (options: UseRoomOptions = {}) => {
     }
   }, []);
 
-  const joinRoom = useCallback(async (code: string, participantName: string) => {
+  const joinRoom = useCallback(async (code: string, participantName: string): Promise<Room | undefined> => {
     setIsLoading(true);
     setError(null);
 
@@ -133,12 +133,13 @@ export const useRoom = (options: UseRoomOptions = {}) => {
       const data = await response.json();
       setRoom(data.room);
       setCurrentParticipant(data.participant);
-      return true;
+      return data.room
     } catch (err) {
       const message = err instanceof Error ? err.message : "Error al unirse";
       setError(message);
       toast.error(message);
-      return false;
+
+      return
     } finally {
       setIsLoading(false);
     }

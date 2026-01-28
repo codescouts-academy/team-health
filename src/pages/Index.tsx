@@ -10,6 +10,7 @@ import { MultiplayerEvaluation } from "@/components/MultiplayerEvaluation";
 import { useRoom } from "@/hooks/useRoom";
 import { TeamVote, healthCategories } from "@/data/healthCategories";
 import { endpoints } from "@/config/api";
+import { Room } from "@/types/room";
 
 type AppState =
   | "welcome"
@@ -70,7 +71,8 @@ const Index = () => {
     if (success) {
       setAppState("multiplayer-waiting");
     }
-    return success;
+
+    return !!success;
   };
 
   const handleStartVoting = async () => {
@@ -126,6 +128,37 @@ const Index = () => {
       setAppState("multiplayer-voting");
     }
   }, [room?.status]);
+
+  useEffect(() => {
+    if (appState === "multiplayer-waiting") {
+      window.addEventListener("beforeunload", function (e) {
+        localStorage.setItem("room", JSON.stringify(room));
+        localStorage.setItem("name", currentParticipant?.name || "");
+
+        leaveRoom();
+
+        var confirmationMessage = "Are you sure you want to leave?";
+        e.returnValue = confirmationMessage;
+        return confirmationMessage;
+      });
+    }
+  }, [appState]);
+
+  useEffect(() => {
+    const savedRoom = localStorage.getItem("room");
+    const name = localStorage.getItem("name") || "";
+    if (savedRoom) {
+      const parsedRoom = JSON.parse(savedRoom) as Room;
+      if (parsedRoom) {
+        joinRoom(parsedRoom.code, name).then((room) => {
+          setAppState("multiplayer-waiting");
+
+          localStorage.removeItem("room");
+          localStorage.removeItem("name");
+        });
+      }
+    }
+  }, []);
 
   return (
     <>
