@@ -141,6 +141,11 @@ export const RoomLobby = ({
               type="text"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  mode === "create" ? handleCreate() : handleJoin();
+                }
+              }}
               placeholder="Ej: María"
               className="w-full px-4 py-3 bg-muted border border-border rounded-xl
                        text-foreground placeholder:text-muted-foreground
