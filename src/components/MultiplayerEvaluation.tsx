@@ -46,8 +46,10 @@ export const MultiplayerEvaluation = ({
   };
 
   const handleVote = async (vote: VoteValue) => {
-    await onVote(currentCategory.id, vote);
-    handleNext();
+    const success = await onVote(currentCategory.id, vote);
+    if (success) handleNext();
+
+    return success;
   };
 
   const handleNext = () => {
