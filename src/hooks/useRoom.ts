@@ -4,6 +4,7 @@ import { Room, Participant, RoomVote, SSEEvent, ParticipantJoinedData, VoteCastD
 import { useSSE } from "./useSSE";
 import { VoteValue } from "@/data/healthCategories";
 import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 interface UseRoomOptions {
   onVotingCompleted?: () => void;
@@ -14,6 +15,7 @@ export const useRoom = (options: UseRoomOptions = {}) => {
   const [currentParticipant, setCurrentParticipant] = useState<Participant | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleSSEMessage = useCallback((event: SSEEvent) => {
     switch (event.type) {
@@ -27,7 +29,11 @@ export const useRoom = (options: UseRoomOptions = {}) => {
           ...prev,
           participants: [...prev.participants.filter(p => p.id !== data.participant.id), data.participant]
         } : null);
-        toast.success(`${data.participant.name} se unió a la sala`);
+        toast({
+          title: "Nuevo participante",
+          description: `${data.participant.name} se unió a la sala`,
+          variant: "default",
+        })
         break;
       }
 
@@ -37,7 +43,11 @@ export const useRoom = (options: UseRoomOptions = {}) => {
           ...prev,
           participants: prev.participants.filter(p => p.id !== data.odataidPtant)
         } : null);
-        toast.info(`${data.participantName} salió de la sala`);
+        toast({
+          title: "Participante salió",
+          description: `[${data.participantName}] salió de la sala`,
+          variant: "default",
+        });
         break;
       }
 
@@ -66,7 +76,11 @@ export const useRoom = (options: UseRoomOptions = {}) => {
       case "voting_started":
         console.log("Voting started");
         setRoom(prev => prev ? { ...prev, status: "voting" } : null);
-        toast.success("¡La votación ha comenzado!");
+        toast({
+          title: "Votación iniciada",
+          description: "¡La votación ha comenzado!",
+          variant: "default",
+        });
         break;
 
       case "voting_completed":
@@ -75,7 +89,11 @@ export const useRoom = (options: UseRoomOptions = {}) => {
         break;
 
       case "room_closed":
-        toast.error("La sala ha sido cerrada");
+        toast({
+          title: "Sala cerrada",
+          description: "La sala ha sido cerrada",
+          variant: "destructive",
+        });
         setRoom(null);
         break;
     }
@@ -107,7 +125,11 @@ export const useRoom = (options: UseRoomOptions = {}) => {
     } catch (err) {
       const message = err instanceof Error ? err.message : "Error al crear la sala";
       setError(message);
-      toast.error(message);
+      toast({
+        title: "Error",
+        description: message,
+        variant: "destructive",
+      });
       return null;
     } finally {
       setIsLoading(false);
@@ -137,7 +159,11 @@ export const useRoom = (options: UseRoomOptions = {}) => {
     } catch (err) {
       const message = err instanceof Error ? err.message : "Error al unirse";
       setError(message);
-      toast.error(message);
+      toast({
+        title: "Error",
+        description: message,
+        variant: "destructive",
+      });
 
       return
     } finally {
@@ -178,8 +204,12 @@ export const useRoom = (options: UseRoomOptions = {}) => {
 
       if (!response.ok) throw new Error("Failed to submit vote");
       return true;
-    } catch (err) {
-      toast.error("Error al enviar voto");
+    } catch {
+      toast({
+        title: "Error",
+        description: "Error al enviar voto",
+        variant: "destructive",
+      });
       return false;
     }
   }, [room, currentParticipant]);

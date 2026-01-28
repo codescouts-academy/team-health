@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 
 interface RoomLobbyProps {
   onCreateRoom: (teamName: string, hostName: string) => Promise<string | null>;
@@ -18,6 +20,7 @@ export const RoomLobby = ({
   const [teamName, setTeamName] = useState("");
   const [userName, setUserName] = useState("");
   const [roomCode, setRoomCode] = useState("");
+  const { toast } = useToast();
 
   const handleCreate = async () => {
     if (!teamName.trim() || !userName.trim()) return;
@@ -26,7 +29,18 @@ export const RoomLobby = ({
 
   const handleJoin = async () => {
     if (!roomCode.trim() || !userName.trim()) return;
-    await onJoinRoom(roomCode.trim().toUpperCase(), userName.trim());
+    const exist = await onJoinRoom(
+      roomCode.trim().toUpperCase(),
+      userName.trim(),
+    );
+
+    if (!exist) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "La sala con ese código no existe.",
+      });
+    }
   };
 
   if (mode === "select") {
@@ -103,6 +117,7 @@ export const RoomLobby = ({
                 Nombre del Equipo
               </label>
               <input
+                autoFocus
                 type="text"
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
@@ -120,6 +135,7 @@ export const RoomLobby = ({
                 Código de Sala
               </label>
               <input
+                autoFocus
                 type="text"
                 value={roomCode}
                 onChange={(e) => setRoomCode(e.target.value.toUpperCase())}

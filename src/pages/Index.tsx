@@ -11,6 +11,7 @@ import { useRoom } from "@/hooks/useRoom";
 import { TeamVote, healthCategories } from "@/data/healthCategories";
 import { endpoints } from "@/config/api";
 import { Room } from "@/types/room";
+import { Toaster } from "@/components/ui/toaster";
 
 type AppState =
   | "welcome"
@@ -185,6 +186,8 @@ const Index = () => {
 
   return (
     <>
+      <Toaster />
+
       {appState === "welcome" && (
         <WelcomeScreen onMultiplayer={handleMultiplayer} />
       )}
