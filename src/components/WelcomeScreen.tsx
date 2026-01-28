@@ -1,3 +1,5 @@
+import { healthCategories } from "@/data/healthCategories";
+
 interface WelcomeScreenProps {
   onMultiplayer: () => void;
 }
@@ -28,7 +30,9 @@ export const WelcomeScreen = ({ onMultiplayer }: WelcomeScreenProps) => {
             </p>
             <h2 className="font-bold text-lg mb-2">¿Cómo funciona?</h2>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>✅ Evalúa 8 dimensiones clave del equipo</li>
+              <li>
+                ✅ Evalúa {healthCategories.length} dimensiones clave del equipo
+              </li>
               <li>🚦 Vota usando el semáforo (verde/amarillo/rojo)</li>
               <li>📊 Genera un reporte visual automático</li>
             </ul>
