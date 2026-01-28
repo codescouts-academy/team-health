@@ -29,7 +29,7 @@ export const HealthEvaluation = ({
       const existing = prev.find((v) => v.categoryId === currentCategory.id);
       if (existing) {
         return prev.map((v) =>
-          v.categoryId === currentCategory.id ? { ...v, vote } : v
+          v.categoryId === currentCategory.id ? { ...v, vote } : v,
         );
       }
       return [...prev, { categoryId: currentCategory.id, vote }];
@@ -78,7 +78,9 @@ export const HealthEvaluation = ({
         {/* Category Navigation Pills */}
         <div className="flex flex-wrap justify-center gap-2 mb-8">
           {healthCategories.map((category, index) => {
-            const categoryVote = votes.find((v) => v.categoryId === category.id);
+            const categoryVote = votes.find(
+              (v) => v.categoryId === category.id,
+            );
             const isVoted = !!categoryVote?.vote;
             const isCurrent = index === currentIndex;
 
@@ -89,8 +91,12 @@ export const HealthEvaluation = ({
                 className={cn(
                   "px-3 py-2 rounded-full text-sm font-semibold transition-all",
                   isCurrent && "bg-primary text-primary-foreground scale-110",
-                  !isCurrent && isVoted && "bg-success/20 text-success border border-success/30",
-                  !isCurrent && !isVoted && "bg-muted text-muted-foreground hover:bg-muted/80"
+                  !isCurrent &&
+                    isVoted &&
+                    "bg-success/20 text-success border border-success/30",
+                  !isCurrent &&
+                    !isVoted &&
+                    "bg-muted text-muted-foreground hover:bg-muted/80",
                 )}
               >
                 <span className="mr-1">{category.icon}</span>
@@ -107,7 +113,6 @@ export const HealthEvaluation = ({
             category={currentCategory}
             vote={currentVote?.vote || null}
             onVote={handleVote}
-            isActive={true}
           />
         </div>
 
@@ -139,10 +144,12 @@ export const HealthEvaluation = ({
                 "px-8 py-3 font-bold rounded-xl transition-all",
                 allVoted
                   ? "bg-success text-success-foreground hover:bg-success/90 animate-pulse-slow"
-                  : "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-muted text-muted-foreground cursor-not-allowed",
               )}
             >
-              {allVoted ? "📊 Ver Reporte" : `Faltan ${healthCategories.length - votedCount} votos`}
+              {allVoted
+                ? "📊 Ver Reporte"
+                : `Faltan ${healthCategories.length - votedCount} votos`}
             </button>
           )}
         </div>
