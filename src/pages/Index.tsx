@@ -7,15 +7,12 @@ import { RoomLobby } from "@/components/RoomLobby";
 import { RoomWaiting } from "@/components/RoomWaiting";
 import { MultiplayerEvaluation } from "@/components/MultiplayerEvaluation";
 import { useRoom } from "@/hooks/useRoom";
-import { TeamVote, healthCategories } from "@/data/healthCategories";
 import { endpoints } from "@/config/api";
 import { Room } from "@/types/room";
 import { Toaster } from "@/components/ui/toaster";
 
 type AppState =
   | "welcome"
-  | "evaluation"
-  | "report"
   | "multiplayer-lobby"
   | "multiplayer-waiting"
   | "multiplayer-voting"
@@ -23,8 +20,6 @@ type AppState =
 
 const Index = () => {
   const [appState, setAppState] = useState<AppState>("welcome");
-  const [teamName, setTeamName] = useState("");
-  const [votes, setVotes] = useState<TeamVote[]>([]);
 
   const {
     room,
@@ -40,8 +35,6 @@ const Index = () => {
   });
 
   const handleReset = () => {
-    setTeamName("");
-    setVotes([]);
     setAppState("welcome");
   };
 
@@ -153,9 +146,6 @@ const Index = () => {
 
       {appState === "welcome" && (
         <WelcomeScreen onMultiplayer={handleMultiplayer} />
-      )}
-      {appState === "report" && (
-        <HealthReport votes={votes} teamName={teamName} onReset={handleReset} />
       )}
       {appState === "multiplayer-lobby" && (
         <RoomLobby
