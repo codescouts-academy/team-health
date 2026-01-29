@@ -26,7 +26,7 @@ export const HealthCard = ({ category, vote, onVote }: HealthCardProps) => {
   };
 
   return (
-    <div className="health-card p-6 flex flex-col h-[26rem] w-full select-none">
+    <div className="health-card p-6 flex flex-col justify-between h-[29rem] w-full select-none">
       {/* Header */}
       <div className="text-center mb-4">
         <span className="text-5xl mb-3 block">{category.icon}</span>
@@ -88,16 +88,21 @@ export const HealthCard = ({ category, vote, onVote }: HealthCardProps) => {
       </div>
 
       {/* Vote status */}
-      {vote && (
-        <p className="text-center mt-4 text-sm text-muted-foreground animate-slide-up">
-          ✓ Votado:{" "}
-          {vote === "green"
-            ? "Excelente"
-            : vote === "yellow"
-              ? "Regular"
-              : "Necesita mejorar"}
-        </p>
-      )}
+      <p
+        className={cn(
+          "text-center mt-4 text-sm text-muted-foreground animate-slide-up",
+          {
+            hidden: vote === null,
+          },
+        )}
+      >
+        ✓ Votado:{" "}
+        {vote === "green"
+          ? "Excelente"
+          : vote === "yellow"
+            ? "Regular"
+            : "Necesita mejorar"}
+      </p>
     </div>
   );
 };

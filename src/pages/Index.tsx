@@ -91,37 +91,6 @@ const Index = () => {
     setAppState("multiplayer-report");
   };
 
-  // Convert room votes to TeamVote format for report
-  const getAggregatedVotes = (): TeamVote[] => {
-    if (!room) return [];
-
-    return healthCategories.map((category) => {
-      const categoryVotes = room.votes.filter(
-        (v) => v.categoryId === category.id,
-      );
-
-      if (categoryVotes.length === 0) {
-        return { categoryId: category.id, vote: null };
-      }
-
-      const greenCount = categoryVotes.filter((v) => v.vote === "green").length;
-      const yellowCount = categoryVotes.filter(
-        (v) => v.vote === "yellow",
-      ).length;
-      const redCount = categoryVotes.filter((v) => v.vote === "red").length;
-
-      const totalScore = greenCount * 3 + yellowCount * 2 + redCount * 1;
-      const averageScore = totalScore / categoryVotes.length;
-
-      let vote: "green" | "yellow" | "red" | null = null;
-      if (averageScore >= 2.5) vote = "green";
-      else if (averageScore >= 1.5) vote = "yellow";
-      else vote = "red";
-
-      return { categoryId: category.id, vote };
-    });
-  };
-
   const handleBeforeUnload = (e: any) => {
     localStorage.setItem("room", JSON.stringify(room));
     localStorage.setItem("name", currentParticipant?.name || "");
@@ -217,7 +186,7 @@ const Index = () => {
       )}
       {appState === "multiplayer-report" && room && (
         <HealthReport
-          votes={getAggregatedVotes()}
+          room={room}
           teamName={room.teamName}
           onReset={handleReset}
           participantCount={room.participants.length}

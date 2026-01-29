@@ -1,5 +1,7 @@
 import { healthCategories, TeamVote, VoteValue } from "@/data/healthCategories";
 import { cn } from "@/lib/utils";
+import { Room } from "@/types/room";
+import { useCallback, useMemo } from "react";
 import {
   RadarChart,
   PolarGrid,
@@ -8,9 +10,14 @@ import {
   Radar,
   ResponsiveContainer,
 } from "recharts";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface HealthReportProps {
-  votes: TeamVote[];
+  room?: Room;
   teamName: string;
   onReset: () => void;
   participantCount?: number;
@@ -33,15 +40,152 @@ const getScoreEmoji = (vote: VoteValue): string => {
   if (vote === "green") return "🟢";
   if (vote === "yellow") return "🟡";
   if (vote === "red") return "🔴";
+
   return "⚪";
 };
 
+const getVoteLabel = (vote: VoteValue): string => {
+  if (vote === "green") return "Excelente";
+  if (vote === "yellow") return "Regular";
+  if (vote === "red") return "Mejorar";
+  return "Sin voto";
+};
+
+const getVoteColorClass = (vote: VoteValue): string => {
+  if (vote === "green") return "text-success";
+  if (vote === "yellow") return "text-warning";
+  if (vote === "red") return "text-danger";
+  return "text-muted-foreground";
+};
+
+// Componente para mostrar el detalle de votos por participante
+interface VoteDetailsPopoverProps {
+  categoryId: string;
+  categoryTitle: string;
+  room?: Room;
+}
+
+const VoteDetailsPopover = ({
+  categoryId,
+  categoryTitle,
+  room,
+}: VoteDetailsPopoverProps) => {
+  const categoryVotes = useMemo(() => {
+    if (!room) return [];
+    return room.votes.filter((v) => v.categoryId === categoryId);
+  }, [room, categoryId]);
+
+  const participantsWithVotes = useMemo(() => {
+    if (!room) return [];
+
+    return room.participants.map((participant) => {
+      const vote = categoryVotes.find((v) => v.odataidPtant === participant.id);
+      return {
+        participant,
+        vote: vote?.vote || null,
+      };
+    });
+  }, [room, categoryVotes]);
+
+  const voteCount = categoryVotes.length;
+  const totalParticipants = room?.participants.length || 0;
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button className="ml-2 px-2 py-1 text-xs bg-primary/10 hover:bg-primary/20 rounded-md transition-colors">
+          👥 {voteCount}/{totalParticipants} votos
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80" align="end">
+        <div className="space-y-3">
+          <div className="border-b pb-2">
+            <h4 className="font-semibold text-sm">{categoryTitle}</h4>
+            <p className="text-xs text-muted-foreground mt-1">
+              Detalle de votos por participante
+            </p>
+          </div>
+
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {participantsWithVotes.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                No hay participantes en esta sala
+              </p>
+            ) : (
+              participantsWithVotes.map(({ participant, vote }) => (
+                <div
+                  key={participant.id}
+                  className="flex items-center justify-between p-2 bg-muted/50 rounded-lg"
+                >
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="text-sm font-medium truncate">
+                      {participant.name}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className="text-base">{getScoreEmoji(vote)}</span>
+                    <span
+                      className={cn(
+                        "text-xs font-semibold",
+                        getVoteColorClass(vote),
+                      )}
+                    >
+                      {getVoteLabel(vote)}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {voteCount < totalParticipants && (
+            <div className="pt-2 border-t text-xs text-muted-foreground">
+              {totalParticipants - voteCount} participante(s) sin votar
+            </div>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
 export const HealthReport = ({
-  votes,
+  room,
   teamName,
   onReset,
   participantCount,
 }: HealthReportProps) => {
+  // Convert room votes to TeamVote format for report
+  const votes = useMemo((): TeamVote[] => {
+    if (!room) return [];
+
+    return healthCategories.map((category) => {
+      const categoryVotes = room.votes.filter(
+        (v) => v.categoryId === category.id,
+      );
+
+      if (categoryVotes.length === 0) {
+        return { categoryId: category.id, vote: null };
+      }
+
+      const greenCount = categoryVotes.filter((v) => v.vote === "green").length;
+      const yellowCount = categoryVotes.filter(
+        (v) => v.vote === "yellow",
+      ).length;
+      const redCount = categoryVotes.filter((v) => v.vote === "red").length;
+
+      const totalScore = greenCount * 3 + yellowCount * 2 + redCount * 1;
+      const averageScore = totalScore / categoryVotes.length;
+
+      let vote: "green" | "yellow" | "red" | null = null;
+      if (averageScore >= 2.5) vote = "green";
+      else if (averageScore >= 1.5) vote = "yellow";
+      else vote = "red";
+
+      return { categoryId: category.id, vote };
+    });
+  }, [room]);
+
   const chartData = healthCategories.map((category) => {
     const vote = votes.find((v) => v.categoryId === category.id);
     return {
@@ -94,7 +238,10 @@ export const HealthReport = ({
             {participantCount && (
               <span className="bg-secondary/50 px-4 py-2 rounded-full">
                 <span className="text-muted-foreground">
-                  👥 {participantCount} participantes
+                  👥{" "}
+                  {participantCount > 1
+                    ? `${participantCount} participantes`
+                    : `${participantCount} participante`}
                 </span>
               </span>
             )}
@@ -194,12 +341,13 @@ export const HealthReport = ({
                       {getScoreEmoji(vote?.vote || null)}
                     </span>
                     <span className={cn("font-bold", getScoreColor(score))}>
-                      {vote?.vote === "green"
-                        ? "Excelente"
-                        : vote?.vote === "yellow"
-                          ? "Regular"
-                          : "Mejorar"}
+                      {getVoteLabel(vote?.vote || null)}
                     </span>
+                    <VoteDetailsPopover
+                      categoryId={category.id}
+                      categoryTitle={category.title}
+                      room={room}
+                    />
                   </div>
                 </div>
               );
